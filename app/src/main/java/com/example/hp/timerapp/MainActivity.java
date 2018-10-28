@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -14,24 +15,44 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     TextView textView;
     SeekBar timeSeekBar;
-    boolean btnpressed=ture;
+    boolean btnpressed=false;
+    CountDownTimer countDownTimer;
+    Button button;
+
+    public void resetTimer(){
+        btnpressed=false;
+        button.setText("Start");
+        textView.setText("00:30");
+        timeSeekBar.setProgress(30);
+        timeSeekBar.setEnabled(true);
+        countDownTimer.cancel();
+    }
 
     public void buttonPressed(View view){
 
+        if(btnpressed){
+            resetTimer();
+        }
 
-        new CountDownTimer(timeSeekBar.getProgress()*1000+100,1000){
-            @Override
-            public void onTick(long l) {
+        else {
 
-                updateTime((int)l/1000);
-            }
+            btnpressed=true;
+            timeSeekBar.setEnabled(false);
+            button.setText("Stop");
+            countDownTimer = new CountDownTimer(timeSeekBar.getProgress() * 1000 + 100, 1000) {
+                @Override
+                public void onTick(long l) {
+                    updateTime((int) l / 1000);
+                }
 
-            @Override
-            public void onFinish() {
-                mediaPlayer=MediaPlayer.create(getApplicationContext(),R.raw.timeup);
-                mediaPlayer.start();
-            }
-        }.start();
+                @Override
+                public void onFinish() {
+                    mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.timeup);
+                    mediaPlayer.start();
+                    resetTimer();
+                }
+            }.start();
+        }
     }
 
     public void updateTime(int sec){
@@ -55,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
         textView=(TextView)findViewById(R.id.textView);
         timeSeekBar=(SeekBar)findViewById(R.id.seekBar);
+        button =(Button)findViewById(R.id.button);
 
+        
         timeSeekBar.setMax(600);
         timeSeekBar.setProgress(30);
 
